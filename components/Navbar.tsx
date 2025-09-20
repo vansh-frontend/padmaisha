@@ -107,14 +107,15 @@ const Navbar = () => {
               </>
             ) : (
               <>
-                <Button
-                  variant="ghost"
-                  className="p-2 text-gray-700 hover:text-gray-900 flex items-center"
-                  onClick={() => setShowLogin(true)}
-                  title="Login"
-                >
-                  <User className="h-6 w-6 mr-1" /> Login
-                </Button>
+                <Link href="/login">
+                  <Button
+                    variant="ghost"
+                    className="p-2 text-gray-700 hover:text-gray-900 flex items-center"
+                    title="Login"
+                  >
+                    <User className="h-6 w-6 mr-1" /> Login
+                  </Button>
+                </Link>
                 <Button
                   variant="ghost"
                   className="p-2 text-gray-700 hover:text-gray-900 flex items-center"

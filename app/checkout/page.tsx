@@ -1,4 +1,5 @@
-'use client';
+"use client";
+import Link from 'next/link';
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, Check } from 'lucide-react';
@@ -23,25 +24,25 @@ const CheckoutPage = () => {
     gst: state.user?.gst || ''
   });
 
+  // Require login to access checkout page
+  if (!state.user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">Please log in to checkout</h1>
+          <p className="text-gray-600 mb-6">You must be logged in to proceed with checkout.</p>
+          <Link href="/">
+            <Button className="bg-blue-600 hover:bg-blue-700 text-white">Go to Login</Button>
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
   // If cart is empty, redirect to cart page
   if (state.cart.length === 0) {
     router.push('/cart');
     return null;
-  }
-
-  // If user is not registered, show registration modal
-  if (!state.user) {
-    return (
-      <div>
-        <RegistrationModal />
-        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-          <div className="text-center">
-            <h1 className="text-2xl font-bold text-gray-900 mb-4">Please Register First</h1>
-            <p className="text-gray-600">You need to register to proceed with checkout</p>
-          </div>
-        </div>
-      </div>
-    );
   }
 
   const handlePlaceOrder = async () => {

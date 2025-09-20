@@ -1,5 +1,6 @@
 'use client';
 import React, { useState } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { Minus, Plus, X, ShoppingBag, MapPin, Tag } from 'lucide-react';
 import { useApp } from '@/contexts/AppContext';
@@ -13,6 +14,21 @@ const CartPage = () => {
   const { state, dispatch } = useApp();
   const [couponCode, setCouponCode] = useState('');
   const [appliedCoupon, setAppliedCoupon] = useState<{code: string, discount: number} | null>(null);
+
+  // Require login to view cart
+  if (!state.user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">Please log in to view your cart</h1>
+          <p className="text-gray-600 mb-6">You must be logged in to see your carted products and checkout.</p>
+          <Link href="/login">
+            <Button className="bg-blue-600 hover:bg-blue-700 text-white">Go to Login</Button>
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   if (state.cart.length === 0) {
     return (
@@ -94,13 +110,16 @@ const CartPage = () => {
                 <Card key={itemId} className="p-4">
                   <CardContent className="p-0">
                     <div className="flex gap-4">
-                      <img
+                      <Image
                         src={item.image}
                         alt={item.name}
+                        width={96}
+                        height={96}
                         className="w-24 h-24 object-cover rounded-lg"
                         onError={(e) => {
-                          e.currentTarget.src = 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=200&h=200&fit=crop';
+                          (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=200&h=200&fit=crop';
                         }}
+                        unoptimized
                       />
                       
                       <div className="flex-1">

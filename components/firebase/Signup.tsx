@@ -21,7 +21,9 @@ const Signup = ({ onSuccess }: { onSuccess?: () => void }) => {
     setError('');
     setSuccess('');
     try {
-      await createUserWithEmailAndPassword(auth, email, password);
+  // Only allow signup if running in browser (not SSR)
+  if (typeof window === 'undefined') throw new Error('Signup only allowed in browser');
+  await createUserWithEmailAndPassword(auth, email, password);
       setSuccess('Signup successful!');
       if (onSuccess) onSuccess();
     } catch (err: any) {
@@ -35,8 +37,10 @@ const Signup = ({ onSuccess }: { onSuccess?: () => void }) => {
     setError('');
     setSuccess('');
     try {
-      const provider = new GoogleAuthProvider();
-      await signInWithPopup(auth, provider);
+  // Only allow Google signup if running in browser (not SSR)
+  if (typeof window === 'undefined') throw new Error('Google signup only allowed in browser');
+  const provider = new GoogleAuthProvider();
+  await signInWithPopup(auth, provider);
       setSuccess('Signup successful!');
       if (onSuccess) onSuccess();
     } catch (err: any) {

@@ -50,7 +50,7 @@ interface AppState {
 }
 
 type AppAction = 
-  | { type: 'SET_USER'; payload: User }
+  | { type: 'SET_USER'; payload: User | null }
   | { type: 'ADD_TO_CART'; payload: { product: Product; size: string } }
   | { type: 'REMOVE_FROM_CART'; payload: string }
   | { type: 'UPDATE_CART_QUANTITY'; payload: { id: string; quantity: number } }
@@ -147,6 +147,7 @@ const AppContext = createContext<{
 } | undefined>(undefined);
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+
   const [state, dispatch] = useReducer(appReducer, initialState);
 
   useEffect(() => {
@@ -182,6 +183,42 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         dispatch({ type: 'TOGGLE_REGISTRATION_MODAL', payload: true });
       }
     }, 2000);
+  }, []);
+
+  // --- Firebase Auth State Sync ---
+  useEffect(() => {
+    // Only run on client
+    if (typeof window === 'undefined') return;
+    let unsubscribe: (() => void) | undefined;
+    (async () => {
+      try {
+        const { auth } = await import('../components/firebase/firebaseConfig');
+        const { onAuthStateChanged } = await import('firebase/auth');
+        unsubscribe = onAuthStateChanged(auth, (user) => {
+          if (user) {
+            // Map Firebase user to AppContext User type (fill with defaults if needed)
+            const userObj = {
+              id: user.uid,
+              name: user.displayName || user.email || 'User',
+              phone: user.phoneNumber || '',
+              gst: '',
+              address: '',
+              isRegistered: true,
+              discount: 0,
+            };
+            dispatch({ type: 'SET_USER', payload: userObj });
+          } else {
+            // Set to guest user (or null if you want to force login)
+            dispatch({ type: 'SET_USER', payload: null });
+          }
+        });
+      } catch (e) {
+        // fail silently
+      }
+    })();
+    return () => {
+      if (unsubscribe) unsubscribe();
+    };
   }, []);
 
   useEffect(() => {

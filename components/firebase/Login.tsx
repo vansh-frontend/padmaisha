@@ -23,7 +23,9 @@ const Login = ({ onSuccess }: { onSuccess?: () => void }) => {
     setError('');
     setSuccess('');
     try {
-      await signInWithEmailAndPassword(auth, email, password);
+  // Only allow login if running in browser (not SSR)
+  if (typeof window === 'undefined') throw new Error('Login only allowed in browser');
+  await signInWithEmailAndPassword(auth, email, password);
       setSuccess('Login successful!');
       if (onSuccess) onSuccess();
     } catch (err: any) {
@@ -37,8 +39,10 @@ const Login = ({ onSuccess }: { onSuccess?: () => void }) => {
     setError('');
     setSuccess('');
     try {
-      const provider = new GoogleAuthProvider();
-      await signInWithPopup(auth, provider);
+  // Only allow Google login if running in browser (not SSR)
+  if (typeof window === 'undefined') throw new Error('Google login only allowed in browser');
+  const provider = new GoogleAuthProvider();
+  await signInWithPopup(auth, provider);
       setSuccess('Login successful!');
       if (onSuccess) onSuccess();
     } catch (err: any) {
@@ -52,7 +56,9 @@ const Login = ({ onSuccess }: { onSuccess?: () => void }) => {
     setError('');
     setSuccess('');
     try {
-      await sendPasswordResetEmail(auth, email);
+  // Only allow password reset if running in browser (not SSR)
+  if (typeof window === 'undefined') throw new Error('Password reset only allowed in browser');
+  await sendPasswordResetEmail(auth, email);
       setSuccess('A password reset email has been sent. Please check your inbox or spam folder.');
     } catch (err: any) {
       setError(err.message);
